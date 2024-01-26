@@ -8,6 +8,9 @@ public class SpawnerSettings : MonoBehaviour
     public event Action<float> DistanceChanged;
     public event Action<float> TimeChanged;
 
+    private const string IncorrectValue = "¬ведите другое значение";
+    private const float MinNumber = 0;
+
     [SerializeField] private TMP_InputField _speed;
     [SerializeField] private TMP_InputField _distance;
     [SerializeField] private TMP_InputField _time;
@@ -17,10 +20,6 @@ public class SpawnerSettings : MonoBehaviour
         _speed.onValueChanged.AddListener(OnSpeedValueChanged);
         _distance.onValueChanged.AddListener(OnDistanceValueChanged);
         _time.onValueChanged.AddListener(OnTimeValueChanged);
-
-        _speed.onValidateInput += ValidateInput;
-        _distance.onValidateInput += ValidateInput;
-        _time.onValidateInput += ValidateInput;
     }
 
     private void OnDisable()
@@ -28,17 +27,13 @@ public class SpawnerSettings : MonoBehaviour
         _speed.onValueChanged.RemoveListener(OnSpeedValueChanged);
         _distance.onValueChanged.RemoveListener(OnDistanceValueChanged);
         _time.onValueChanged.RemoveListener(OnTimeValueChanged);
-
-        _speed.onValidateInput -= ValidateInput;
-        _distance.onValidateInput -= ValidateInput;
-        _time.onValidateInput -= ValidateInput;
     }
 
     private void OnSpeedValueChanged(string value)
     {
         if (int.TryParse(value, out int intValue))
         {
-            if (intValue <= 0)
+            if (intValue <= MinNumber)
             {
                 _speed.text = "";
                 value = "";
@@ -47,6 +42,8 @@ public class SpawnerSettings : MonoBehaviour
         else
         {
             _speed.text = "";
+            Debug.Log(IncorrectValue);
+            return;
         }
 
         if (value != "")
@@ -59,7 +56,7 @@ public class SpawnerSettings : MonoBehaviour
     {
         if (int.TryParse(value, out int intValue))
         {
-            if (intValue <= 0)
+            if (intValue <= MinNumber)
             {
                 _distance.text = "";
                 value = "";
@@ -68,6 +65,8 @@ public class SpawnerSettings : MonoBehaviour
         else
         {
             _distance.text = "";
+            Debug.Log(IncorrectValue);
+            return;
         }
 
         if (value != "")
@@ -80,7 +79,7 @@ public class SpawnerSettings : MonoBehaviour
     {
         if (int.TryParse(value, out int intValue))
         {
-            if (intValue <= 0)
+            if (intValue <= MinNumber)
             {
                 _time.text = "";
                 value = "";
@@ -89,21 +88,13 @@ public class SpawnerSettings : MonoBehaviour
         else
         {
             _time.text = "";
+            Debug.Log(IncorrectValue);
+            return;
         }
 
         if (value != "")
         {
             TimeChanged?.Invoke(int.Parse(value));
         }
-    }
-
-    private char ValidateInput(string text, int charIndex, char addedChar)
-    {
-        if (!char.IsDigit(addedChar))
-        {
-            return '\0';
-        }
-
-        return addedChar;
     }
 }
